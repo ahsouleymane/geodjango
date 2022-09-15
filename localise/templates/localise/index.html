@@ -9,20 +9,77 @@
     <style type="text/css">
         #gis {
             width: ;
-            height:600px ;
+            height:700px ;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.css' %}">
+    <script src="{% static 'leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js' %}"></script>
     <script type="text/javascript" src="{% static 'dist/leaflet.ajax.js' %}"></script>
 </head>
 <body>
     <script type="text/javascript">
         function our_layers(map, options){
+
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            });
+
             var datasets = new L.GeoJSON.AJAX("{% url 'county' %}", {
+
+                style: function colors(feature){
+                    switch(feature.properties.counties){
+
+                        case 'WAJIR':
+                        return{
+                            color: 'orange',
+                            fillOpacity: 0.6,
+                        };
+                        break;
+
+                        case 'ISIOLO':
+                        return{
+                            color: 'purple',
+                            fillOpacity: 0.6,
+                        };
+                        break;
+
+                    }
+                },
+
+                onEachFeature: function(feature, layer){
+                    layer.bindPopup(feature.properties.counties.toString())
+                }
 
             });
 
-            datasets.addTo(map)
+            var points = new L.GeoJSON.AJAX("{% url 'incidence' %}", {
+
+                onEachFeature: function(feature, layer){
+                    layer.bindPopup(feature.properties.name.toString())
+                }
+
+            });
+
+            datasets.addTo(map);
+            points.addTo(map);
+
+            var baseLayers = {
+                "OSM": osm
+            }
+
+            var groupedOverlays = {
+
+                "Layers": {
+                    "counties": datasets,
+                    "incidence": points
+                }
+
+            };
+
+            L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
         }
+
     </script>
 
     <h3>GeoDjango Project</h3>

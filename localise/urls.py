@@ -3,7 +3,7 @@ from localise.views import *
 
 urlpatterns = [
     path('', HomePageView, name="home"),
-    path('county_data/', county_datasets, name="county"),
-    path('incidence_data/', HomePageView, name="home"),
+    path('county/', countyData, name="county"),
+    path('incidence/', IncidenceData, name="incidence"),
     
 ]

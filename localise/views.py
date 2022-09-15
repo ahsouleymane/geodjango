@@ -11,6 +11,10 @@ def HomePageView(request):
     context = {}
     return render(request, 'localise/index.html', context)
 
-def county_datasets(request):
+def countyData(request):
     counties = serialize('geojson', Counties.objects.all())
     return HttpResponse(counties, content_type='json')
+
+def IncidenceData(request):
+	points = serialize('geojson', Incidences.objects.all())
+	return HttpResponse(points, content_type='json')
